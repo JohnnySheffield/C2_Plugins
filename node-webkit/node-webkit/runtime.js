@@ -43,7 +43,6 @@ cr.plugins_.nwk = function(runtime)
 	
 	var instanceProto = pluginProto.Instance.prototype;
 
-	var theInstance = null;
 	// called whenever an instance is created
 	instanceProto.onCreate = function()
 	{
@@ -55,18 +54,14 @@ cr.plugins_.nwk = function(runtime)
 			this.gui = require('nw.gui');
 			this.win = this.gui.Window.get();
 			this.clipboard = this.gui.Clipboard.get();
-			this.windows = {};
-	        this.curTag = "";
+	
 			this.listen();
-			this.arguments = this.gui.App.argv;
-			this.globalModulePaths = global.module.paths;
 		}
 		catch(e){
 			this.IsNodeWebkit= false;
 			this.gui = null;
 			this.win = null;
 			this.clipboard = null;
-			this.curTag = null;
 			
 			return;
 			
@@ -78,43 +73,9 @@ cr.plugins_.nwk = function(runtime)
 	
 	instanceProto.require = function()
 	{
-
 		
 	
 	}
-	
-	instanceProto.createWindow = function(url_, specs_, tag_)
-	{
-		var self = this;
-		var window_  = null;
-		try{
-	    var spec = JSON.parse(specs_);
-		}
-		catch (e)
-			{
-				console.log(e)
-			}
-		
-	    this.windows[tag_] = this.gui.Window.get(
-		     this.gui.Window.open(url_, spec)
-		);
-		this.windows[tag_].tag = tag_;
-		window_=this.windows[tag_];
-
-		window_.on('focus', function() {
-			console.log('New window is focused: ', tag_);
-			
-			self.curTag = tag_;
-			
-			self.runtime.trigger(cr.plugins_.nwk.prototype.cnds.OnFocused, self);
-
-
-		});
-	    
-	
-	
-	}
-	
 	
 	instanceProto.listen = function()
 	{
@@ -122,13 +83,13 @@ cr.plugins_.nwk = function(runtime)
 	    var win =  this.win;
 		var instance = this;
 		var runtime = instance.runtime;
-/*
+
 		win.on('enter-fullscreen', 
 			function() {
 				runtime.trigger(pluginProto.cnds.OnFullscreen,instance);
 			
 		});
-		
+		/*
 		/////////This makes problem, so i commented it out...
 		win.on('close', 
 			function() {
@@ -136,7 +97,7 @@ cr.plugins_.nwk = function(runtime)
 				this.win=null;
 				console.log('close event; win=null');
 			});
-		
+		*/
 		win.on('leave-fullscreen', 
 			function() {
 				runtime.trigger(pluginProto.cnds.OnLeaveFullscreen,instance);
@@ -161,59 +122,51 @@ cr.plugins_.nwk = function(runtime)
 			function() {
 				runtime.trigger(pluginProto.cnds.OnBlur,instance);
 			});
-	*/
+	
 	};
 
 	//////////////////////////////////////
 	// Conditions
-	/*
 	pluginProto.cnds = {};
 	var cnds = pluginProto.cnds;
-	*/
-	function Cnds() {};
 	
-	Cnds.prototype.OnFullscreen = function()
+	cnds.OnFullscreen = function()
 	{
 		return true;
 	};
-	Cnds.prototype.OnClose = function()
+	cnds.OnClose = function()
 	{
 		return true;
 	};
-	Cnds.prototype.OnLeaveFullscreen = function()
+	cnds.OnLeaveFullscreen = function()
 	{
 		return true;
 	};
-	Cnds.prototype.OnLoaded = function()
+	cnds.OnLoaded = function()
 	{
 		return true;
 	};
-	
-	Cnds.prototype.OnFocused = function(tag)
-	{
-		console.log(tag.toLowerCase() === this.curTag.toLowerCase());
-		//return true;
-		return tag.toLowerCase() === this.curTag.toLowerCase();
-		
-	};
-	Cnds.prototype.OnMinimize = function()
+	cnds.OnFocus = function()
 	{
 		return true;
 	};
-	Cnds.prototype.OnRestored = function()
+	cnds.OnMinimize = function()
 	{
 		return true;
 	};
-	Cnds.prototype.OnBlur = function()
+	cnds.OnRestored = function()
 	{
 		return true;
 	};
-	Cnds.prototype.IsNodeWebkit = function()
+	cnds.OnBlur = function()
+	{
+		return true;
+	};
+	cnds.IsNodeWebkit = function()
 	{
 		return this.IsNodeWebkit;
 	};
 
-	pluginProto.cnds = new Cnds();
 	//////////////////////////////////////
 	// Actions
 	pluginProto.acts = {};
@@ -314,16 +267,7 @@ cr.plugins_.nwk = function(runtime)
 		}
 		
 	};
-	acts.closeTag = function (tag)
-	{
-	  	if (!this.IsNodeWebkit)
-			return;  
-	
-		theInstance.windows[tag].close();
-		//theInstance.windows[tag] = null;
-		
-	};
-	acts.reload = function (tag)
+	acts.reload = function ()
 	{
 		if (!this.IsNodeWebkit)
 			return;	
@@ -495,16 +439,12 @@ cr.plugins_.nwk = function(runtime)
 		
 		this.gui.showItemInFolder(file_path);
 	};
-	acts.open = function (url_, specs_, tag_)
+	acts.open = function (url, specs)
 	{
 		if (!this.IsNodeWebkit)
 			return;	
 		
-		//window.open(url, '_blank', specs);
-		//this.newWin[tag] = this.gui.Window.open(url, specs);
-		this.createWindow(url_, specs_, tag_);
-		
-		
+		window.open(url, '_blank', specs);
 	};
 	acts.closeAllWindows = function ()
 	{
@@ -546,42 +486,8 @@ cr.plugins_.nwk = function(runtime)
 	{
 		!this.IsNodeWebkit ? "" : ret.set_string(process.versions['node-webkit']);
 	};
-	exps.clArguments = function (ret, index)	
-	{
-		if(this.IsNodeWebkit){ 
-			var element = "";
-			if (index < this.arguments.length)
-				{
-					element = this.arguments[index];
-				}
-			ret.set_string(element);
-		} else {
-		   	ret.set_string("");
-		}
-	};
-	exps.clArgumentsLength = function (ret, index)	
-	{
-		!this.IsNodeWebkit ? "" : ret.set_int(this.arguments.length);	
-	};
-	exps.globalModulePaths = function (ret, index)	
-	{
-		if(this.IsNodeWebkit){ 
-			var element = "";
-			if (index < this.globalModulePaths.length)
-				{
-					element = this.globalModulePaths[index];
-				}
-			ret.set_string(element);
-		} else {
-		   	ret.set_string("");
-		}
-	};
-	exps.clArgumentsLength = function (ret, index)	
-	{
-		!this.IsNodeWebkit ? "" : ret.set_int(this.globalModulePaths.length);	
-	};
 
 	
 	
- 
+
 }());

@@ -23,7 +23,6 @@ AddCondition(0,cf_trigger,"OnFullscreen","Window","On entered Fullscreen","Emitt
 AddCondition(1,cf_trigger,"OnLeaveFullscreen","Window","On leaved Fullscreen","Emitted when window leaves fullscreen state.","OnLeaveFullscreen");
 AddCondition(2, cf_deprecated,"OnClose","Window","On window closed","Usually you would like to listen to the close event and do some shutdown work and then do a close(true) to really close the window.","OnClose");
 AddCondition(3, cf_trigger,"OnLoaded","Window","On window loaded","Requires node-webkit >= v0.3.5 Emitted when the window is fully loaded, this event behaves the same with window.onload, but doesn't rely on the DOM.","OnLoaded");
-AddStringParam("Tag", "A tag of window", "\"\"");
 AddCondition(4, cf_trigger,"OnFocused","Window","On window focused","Emitted when window gets focus.","OnFocused");
 AddCondition(5, cf_trigger,"OnBlur","Window","On window blurred","Emitted when window loses focus.","OnBlur");
 AddCondition(6, cf_trigger,"OnMinimize","Window","On window minimized","Emitted when window is minimized.","OnMinimize");
@@ -40,7 +39,6 @@ AddAction(2, 0, "Restore", "Tray", "Restore Window", "Restore window to previous
 AddAction(3, 0, "Enter fullscreen", "Fullscreen", "Enter fullscreen", "Make the window fullscreen. This function is different with HTML5 FullScreen API, which can make part of the page fullscreen, Window.enterFullscreen() will only fullscreen the whole window.", "enterFullscreen");
 AddAction(4, 0, "Leave fullscreen", "Fullscreen", "Leave fullscreen", "Leave the fullscreen mode", "leaveFullscreen");
 AddAction(5, 0, "Toggle fullscreen", "Fullscreen", "Leave fullscreen", "Toggle the fullscreen mode. Requires node-webkit >= v0.3.5",  "toggleFullscreen");
-AddStringParam("Tag", "A tag of your window to reload", "\"\"");
 AddAction(6, 0, "Reload window", "Reload", "Reload window", "Reloads the current window. Requires node-webkit >= v0.3.5",  "reload");
 AddAction(7, 0, "Reload Ignoring Cache", "Reload", "Reload Ignoring Cache", "Requires node-webkit >= v0.3.5 Like reload(), but don't use caches (aka 'shift-reload').",  "reloadIgnoringCache");
 AddAction(8, 0, "Focus window", "Focus", "Focus window", "Focus on the window.",  "focus");
@@ -104,11 +102,9 @@ AddStringParam("File path", "Path", "\"\"");
 AddAction(36, 0, "Show item in folder", "Shell", "Show item", "Show the given file_path in a file manager. If possible, select the file.", "showItemInFolder");
 AddStringParam("URL", "specifies the URL of the page to open, it can be a page in your app package", "\"\"");
 AddStringParam("Specs", "specs specifies window features", "\"\"");
-AddStringParam("Tag", "A tag for you window", "\"\"");
-AddAction(37, 0, "Create window", "Window", "Create window", "Create a new window and load url in it, you can specify extra options with the window. All window subfields in Manifest format can be used.", "open");
+AddAction(37, 0, "Open window", "Window", "Open window", "Open a new window and load url in it, you can specify extra options with the window. All window subfields in Manifest format can be used.", "open");
 AddAction(38, 0, "Close all windows", "Window", "Close all windows", "Send the close event to all windows of current app, if no window is blocking the close event, then the app will quit after all windows have done shutdown. Use this method to quit an app will give windows a chance to save data.", "closeAllWindows");
-AddStringParam("Tag", "A tag for you window", "\"\"");
-AddAction(39, 0, "Close window tag", "Window", "Close window tag", "Close win tag", "closeTag");
+
 
 ////////////////////////////////////////
 // Expressions
@@ -118,12 +114,6 @@ AddExpression(2, ef_return_number, "window X", "Position", "windowX", "Get the w
 AddExpression(3, ef_return_number, "window Y", "Position", "windowY", "Get the window Y");
 AddExpression(4, ef_return_string, "Clipboard", "Clipboard", "Clipboard", "Get the Clipboard");
 AddExpression(5, ef_return_string, "Version", "Version", "Version", "Get the current node-webkit version.");
-AddNumberParam("index", "index of arg.", 0);
-AddExpression(6, ef_return_string, "Command line arguments", "Arguments", "clArguments", "Get the Command line arguments");
-AddExpression(7, ef_return_number, "Command line arguments length", "Arguments", "clArgumentsLength", "Get the Command line arguments length");
-AddNumberParam("index", "index of arg.", 0);
-AddExpression(8, ef_return_string, "Global module paths", "Module Path", "globalModulePaths", "Get the global Module path ");
-AddExpression(9, ef_return_number, "Global module paths arr length", "Module Path arr length", "globalModulePathsLength", "Get the global Module path array length");
 
 
 ////////////////////////////////////////
